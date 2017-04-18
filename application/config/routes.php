@@ -51,7 +51,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'Main';
 
+$raoute['user'] = "User";
+
 $route['admin'] = 'Admin';
 $route['admin/horaire'] = 'Admin/getHoraire';
+
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

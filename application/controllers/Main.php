@@ -2,6 +2,10 @@
 
 class Main extends CI_Controller {
 
+    public function __construct() {
+        parent::__construct();
+        $this->load->helper('url_helper');
+    }
 
     public function index() {
 
@@ -38,7 +42,5 @@ class Main extends CI_Controller {
         $this->load->view('Main/index', $data);
         $this->load->view('footer');
     }
-
-  
 
 }

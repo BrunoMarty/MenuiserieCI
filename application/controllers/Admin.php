@@ -28,7 +28,7 @@ class Admin extends CI_Controller {
         
         if($_POST){
             $this->Admin_Model->set_horaire($data['horaires']);
-            
+            $data['horaires'] = $this->Admin_Model->get_horaire();
         }
         
         $data['titre']= "Gestion Horaire";
