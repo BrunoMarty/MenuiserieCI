@@ -2,13 +2,14 @@
 
 class Main extends CI_Controller {
 
+
     public function index() {
 
         $data['mnom'] = Array("", "Janvier", "Février", "Mars"
             , "Avril", "Mai", "Juin", "Juillet", "Août"
             , "Septembre", "Octobre", "Novembre", "Décembre");
 
-// on verifie sur des variables ont été envoyé via formulaire
+// on verifie que des variables ont été envoyé via formulaire
         if (!isset($_REQUEST["m"]))
             $data['m'] = date("n");
         else
@@ -37,5 +38,7 @@ class Main extends CI_Controller {
         $this->load->view('Main/index', $data);
         $this->load->view('footer');
     }
+
+  
 
 }
