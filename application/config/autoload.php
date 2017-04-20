@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+session_start();
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -133,3 +133,7 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array();
+  /***/
+$autoload['libraries'] = array('form_validation');
+  /***/
+$autoload['helper'] = array('form');
