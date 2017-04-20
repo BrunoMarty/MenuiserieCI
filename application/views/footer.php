@@ -1,3 +1,3 @@
-<p> Copyright, tout droits reservés</p>
+<p> Copyright, tous droits reservés</p>
 </body>
 </html>

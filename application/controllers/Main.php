@@ -8,11 +8,10 @@ class Main extends CI_Controller {
     }
 
     public function index() {
-
         $data['mnom'] = Array("", "Janvier", "Février", "Mars"
             , "Avril", "Mai", "Juin", "Juillet", "Août"
             , "Septembre", "Octobre", "Novembre", "Décembre");
-
+        
 // on verifie que des variables ont été envoyé via formulaire
         if (!isset($_REQUEST["m"]))
             $data['m'] = date("n");
@@ -22,7 +21,7 @@ class Main extends CI_Controller {
             $data['a'] = date("Y");
         else
             $data['a'] = $_REQUEST["a"];
-
+        
 // On instancie une variable avec la date du premier jour du mois de cette année
         $data['dayone'] = date("w", mktime(1, 1, 1, $data['m'], 1, $data['a']));
         if ($data['dayone'] == 0)
@@ -40,6 +39,22 @@ class Main extends CI_Controller {
 
         $this->load->view('header');
         $this->load->view('Main/index', $data);
+    }
+
+    public function getDay($d, $m, $y) {
+
+        $data['nmois'] = Array("", "Janvier", "Février", "Mars"
+            , "Avril", "Mai", "Juin", "Juillet", "Août"
+            , "Septembre", "Octobre", "Novembre", "Décembre");
+        $data['njour'] = array("Dimanche", "Lundi", "Mardi", "Mercredi",
+            "Jeudi", "Vendredi", "Samedi");
+
+        $data['jour'] = ucfirst($d);
+        $data['mois'] = ucfirst($m);
+        $data['année'] = ucfirst($y);
+
+        $this->load->view('header');
+        $this->load->view('Main/jour', $data);
         $this->load->view('footer');
     }
 

@@ -40,8 +40,8 @@ for ($i = 1; $i <= $jours_a_afficher; $i++) {
         echo'</tr><tr>';
     }
     if ($i < ($jours_in_month + $dayone) && $i >= $dayone) {
-        $a = $i - $dayone + 1;
-        echo "<td width=70><a href=\"\">" . $a . " </a></td>";
+        $d = $i - $dayone + 1;
+        echo "<td width=70><a href='main/getDay/$d/$m/$an'>" . $d . " </a></td>";
     } else {
         echo "<th bgcolor=silver>&nbsp;</td>";
     }
