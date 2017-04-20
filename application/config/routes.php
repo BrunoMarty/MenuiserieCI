@@ -51,7 +51,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'Main';
 
-$raoute['user'] = "User";
+$route['user'] = "User";
+$route['user/inscription'] = "User/create";
+$route['user/disconnect'] = "User/disconnect";
 
 $route['admin'] = 'Admin';
 $route['admin/horaire'] = 'Admin/getHoraire';
