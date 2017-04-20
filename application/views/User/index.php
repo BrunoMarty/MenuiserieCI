@@ -7,7 +7,7 @@ if (!isset($_SESSION['user'])) {
     echo form_input($password);
     ?>
     <br>
-    <a href="">S'inscrire</a>
+    <a href="<?php echo base_url('index.php/user/inscription'); ?>">S'inscrire</a>
     <a href="">Mot de passe oublié</a><br/>
     <input type="submit" name="submit" value="Se connecter" />
 

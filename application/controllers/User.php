@@ -14,7 +14,8 @@ class User extends CI_Controller {
         $data['title'] = "Connexion";
         $this->form_validation->set_rules('email', 'email', 'required');
         $this->form_validation->set_rules('password', 'password', 'required');
-
+        
+        //declaration des variables qui serviront pour créer le formulaire
         $data['email'] = array(
             'name' => 'email',
             'class' => 'user',
@@ -38,19 +39,23 @@ class User extends CI_Controller {
         $this->load->view('footer');
     }
 
+    //fonction de création de compte
     public function create() {
         $data['title'] = "Inscription";
+        // on passe à la vue des variables contenants le nécessaires afin de créer les formulaires sur la vue
         $data['form']['particulier'] = $this->formAccount(1);
         $data['form']['professionnel'] = $this->formAccount(2);
 
+        // on verifie que l'on vient d'un formulaire et l'on teste si l'ajout en base de données peut se faire
+        // si c'est le cas, l'ajout se fait, et ensuite on fait une redirection
         if (($_POST) && ($this->User_Model->add_account() != false)) {
-            
+            redirect('user', 'refresh');
         }
         $this->load->view('header');
         $this->load->view('User/create', $data);
         $this->load->view('footer');
     }
-
+    // fonction qui detruit la variale de connexion et qui renvoi que le page de connexion
     public function disconnect() {
         unset($_SESSION);
         session_destroy();
@@ -77,7 +82,7 @@ class User extends CI_Controller {
         $form['password'] = array(
             'name' => 'password',
             'class' => 'user',
-            'placeholder' => 'E-mail...',
+            'placeholder' => 'Mot de passe...',
         );
         $form['adresse'] = array(
             'name' => 'adresse',
@@ -124,7 +129,7 @@ class User extends CI_Controller {
             );
         }
         if ($choix == 2) {
-            $form['naissance'] = array(
+            $form['raison'] = array(
                 'name' => 'raison',
                 'class' => 'user',
                 'placeholder' => 'Raison sociale...',
@@ -137,7 +142,7 @@ class User extends CI_Controller {
             $form['creation'] = array(
                 'name' => 'date_creation',
                 'class' => 'user',
-                'placeholder' => 'N°Siret ...',
+                'placeholder' => 'Date de création ...',
             );
             $form['type'] = array(
                 'name' => 'type',

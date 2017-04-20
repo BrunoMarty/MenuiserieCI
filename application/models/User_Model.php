@@ -2,6 +2,7 @@
 
 class User_Model extends CI_Model {
 
+    // construteur qui fait la connexion à la base de données
     public function __construct() {
         $this->load->database();
     }
@@ -19,11 +20,12 @@ class User_Model extends CI_Model {
         }
         return 0;
     }
-
-    public function add_account($choix) {
-        if ($choix == 1) {
+    // fonction d'ajout de compte Particulier ou Pro, en fonction du formulaire par lequel on arrive
+    public function add_account() {
+        // création de compte particulier
+        if ($this->input->post('type') == "particulier") {
             $this->load->helper('url');
-            if (($this->input->post('nom') == "") || ($this->input->post('prenom') == "") || ($this->input->post('email') == "") || ($this->input->post('password') == "") || ($this->input->post('adresse') == "") || ($this->input->post('assurance') == "") || ($this->input->post('tel') == "") || ($this->input->post('date_naissance') == "")) {
+            if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
                 return false;
             } else {
                 $data = array(
@@ -32,7 +34,7 @@ class User_Model extends CI_Model {
                     'email' => $this->input->post('email'),
                     'password' => md5($this->input->post('password')),
                     'adresse' => $this->input->post('adresse'),
-                    'fk_ville' => $this->input->post(1),
+                    'fk_ville' => 1,
                     'assurance' => $this->input->post('assurance'),
                     'tel' => $this->input->post('tel'),
                     'date_naissance' => $this->input->post('naissance'),
@@ -40,11 +42,31 @@ class User_Model extends CI_Model {
                     'fk_abonnement' => 1,
                     'formation' => false,
                 );
+                // ajout en BDD
                 return $this->db->insert('Particulier', $data);
             }
         }
-        elseif($choix == 2){
-            
+        // création de compte professionnel
+        elseif($this->input->post('type') == "professionnel"){
+             if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
+                return false;
+            } else {
+                $data = array(
+                    'nom' => $this->input->post('nom'),
+                    'prenom' => $this->input->post('prenom'),
+                    'email' => $this->input->post('email'),
+                    'password' => md5($this->input->post('password')),
+                    'adresse' => $this->input->post('adresse'),
+                    'fk_ville' => 1,
+                    'fk_profession' => 1,
+                    'raison_sociale' => $this->input->post('raison'),
+                    'tel' => $this->input->post('tel'),
+                    'date_creation' => $this->input->post('creation'),
+                    'fk_abonnement' => 1,
+                );
+                // ajout en BDD
+                return $this->db->insert('Professionnel', $data);
+            }
         }
     }
 
