@@ -41,16 +41,13 @@ class User extends CI_Controller {
 
     //fonction de création de compte
     public function create() {
+        $data['test']=$this->User_Model->verif_ville(34500, "beziers");
         $data['title'] = "Inscription";
         // on passe à la vue des variables contenants le nécessaires afin de créer les formulaires sur la vue
         $data['form']['particulier'] = $this->formAccount(1);
         $data['form']['professionnel'] = $this->formAccount(2);
         $this->validationAccount(1);
-//        $this->form_validation->set_rules('nom', 'nom', 'trim|required|min_length[5]|max_length[12]',
-//                array(
-//                'required'      => 'You have not provided %s.',
-//                'is_unique'     => 'This %s already exists.'
-//        ));
+
         // on verifie que l'on vient d'un formulaire et l'on teste si l'ajout en base de données peut se faire
         // si c'est le cas, l'ajout se fait, et ensuite on fait une redirection
         if ($this->form_validation->run()) {
@@ -188,8 +185,17 @@ class User extends CI_Controller {
         $this->form_validation->set_rules('cp', 'cp', 'trim|required|exact_length[5]|integer', array(
             'required' => 'Vous devez saisir un code postal.',
             'exact_length' => 'Le code postal doit contenir 5 chiffres',
-            'integer' => 'Le code posrtal doit contenir que des chiffres'
-            
+            'integer' => 'Le code postal doit contenir que des chiffres'   
+        ));
+        $this->form_validation->set_rules('adresse', 'adresse', 'trim|required|min_length[5]', array(
+            'required' => 'Vous devez saisir un %s.',
+            'min_length' => 'L\'adresse doit faire 5 caractères minimum'
+        ));
+        
+        $this->form_validation->set_rules('password', 'password', 'trim|required|min_length[5]|alpha_dash', array(
+            'required' => 'Vous devez saisir un %s.',
+            'min_length' => 'Le mot de passe doit faire 5 caractères minimum',
+            'alpha_dash' => 'Le mot de passe ne doit contenir que des caractères alpha-numérique, des _ ou des -'
         ));
     }
 

@@ -1,4 +1,5 @@
 <?php
+var_dump($test);
 echo "<h1>$title</h1>";
 echo '<a href="#" id="part">Particulier</a>&nbsp<a href="#" id="pro">Professionnel</a>';
 

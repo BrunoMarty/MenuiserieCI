@@ -23,6 +23,7 @@ class User_Model extends CI_Model {
     // fonction d'ajout de compte Particulier ou Pro, en fonction du formulaire par lequel on arrive
     public function add_account() {
         // création de compte particulier
+         $ville = $this->verif_ville($this->input->post('cp'), $this->input->post('ville'));
         if ($this->input->post('type') == "particulier") {
             $this->load->helper('url');
             if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
@@ -34,11 +35,12 @@ class User_Model extends CI_Model {
                     'email' => $this->input->post('email'),
                     'password' => md5($this->input->post('password')),
                     'adresse' => $this->input->post('adresse'),
-                    'fk_ville' => 1,
+                   'fk_ville' =>  $ville['id'],
                     'assurance' => $this->input->post('assurance'),
                     'tel' => $this->input->post('tel'),
                     'date_naissance' => $this->input->post('naissance'),
                     'fk_usager' => 1,
+                    'date_adhesion' => date('Y-m-d'),
                     'fk_abonnement' => 1,
                     'formation' => false,
                 );
@@ -51,13 +53,14 @@ class User_Model extends CI_Model {
              if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
                 return false;
             } else {
+               
                 $data = array(
                     'nom' => $this->input->post('nom'),
                     'prenom' => $this->input->post('prenom'),
                     'email' => $this->input->post('email'),
                     'password' => md5($this->input->post('password')),
                     'adresse' => $this->input->post('adresse'),
-                    'fk_ville' => 1,
+                    'fk_ville' =>  $ville['id'],
                     'fk_profession' => 1,
                     'raison_sociale' => $this->input->post('raison'),
                     'tel' => $this->input->post('tel'),
@@ -69,5 +72,13 @@ class User_Model extends CI_Model {
             }
         }
     }
-
+    
+    public function verif_ville($cp,$ville) {
+        $query = $this->db->get_where('Ville', array('code_postal' => $cp, 'ville' => strtoupper($ville)));
+        if($query->row_array()==NULL){
+            $this->db->insert('Ville', array('code_postal'=> $cp,'ville'=> strtoupper($ville)));
+            $query = $this->db->get_where('Ville', array('code_postal' => $cp, 'ville' => strtoupper($ville)));
+        }
+        return $query->row_array();
+    }
 }
