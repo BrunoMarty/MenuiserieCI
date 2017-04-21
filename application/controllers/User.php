@@ -14,7 +14,7 @@ class User extends CI_Controller {
         $data['title'] = "Connexion";
         $this->form_validation->set_rules('email', 'email', 'required');
         $this->form_validation->set_rules('password', 'password', 'required');
-        
+
         //declaration des variables qui serviront pour créer le formulaire
         $data['email'] = array(
             'name' => 'email',
@@ -45,16 +45,25 @@ class User extends CI_Controller {
         // on passe à la vue des variables contenants le nécessaires afin de créer les formulaires sur la vue
         $data['form']['particulier'] = $this->formAccount(1);
         $data['form']['professionnel'] = $this->formAccount(2);
-
+        $this->validationAccount(1);
+//        $this->form_validation->set_rules('nom', 'nom', 'trim|required|min_length[5]|max_length[12]',
+//                array(
+//                'required'      => 'You have not provided %s.',
+//                'is_unique'     => 'This %s already exists.'
+//        ));
         // on verifie que l'on vient d'un formulaire et l'on teste si l'ajout en base de données peut se faire
         // si c'est le cas, l'ajout se fait, et ensuite on fait une redirection
-        if (($_POST) && ($this->User_Model->add_account() != false)) {
-            redirect('user', 'refresh');
+        if ($this->form_validation->run()) {
+
+            if (($_POST) && ($this->User_Model->add_account() != false)) {
+                redirect('user', 'refresh');
+            }
         }
         $this->load->view('header');
         $this->load->view('User/create', $data);
         $this->load->view('footer');
     }
+
     // fonction qui detruit la variale de connexion et qui renvoi que le page de connexion
     public function disconnect() {
         unset($_SESSION);
@@ -152,6 +161,36 @@ class User extends CI_Controller {
             );
         }
         return $form;
+    }
+
+    public function validationAccount($choix) {
+
+        $this->form_validation->set_rules('nom', 'nom', 'trim|required|min_length[3]', array(
+            'required' => 'Vous devez saisir un %s.',
+            'min_length' => 'Le nom doit faire 3 caractères minimum'
+        ));
+
+        $this->form_validation->set_rules('prenom', 'prenom', 'trim|required|min_length[3]', array(
+            'required' => 'Vous devez saisir un %s.',
+            'min_length' => 'Le nom doit faire 3 caractères minimum'
+        ));
+        $this->form_validation->set_rules('email', 'email', 'trim|required|valid_email|is_unique[Email.Email]', array(
+            'required' => 'Vous devez saisir un %s.',
+            'min_length' => 'Le nom doit faire 3 caractères minimum'
+        ));
+        
+        $this->form_validation->set_rules('tel', 'tel', 'trim|required|exact_length[10]|integer', array(
+            'required' => 'Vous devez saisir un %s.',
+            'exact_length' => 'Le numéro de téléphone doit contenir 10 chiffres',
+            'integer' => 'Le téléphone doit contenir que des chiffres'
+            
+        ));
+        $this->form_validation->set_rules('cp', 'cp', 'trim|required|exact_length[5]|integer', array(
+            'required' => 'Vous devez saisir un code postal.',
+            'exact_length' => 'Le code postal doit contenir 5 chiffres',
+            'integer' => 'Le code posrtal doit contenir que des chiffres'
+            
+        ));
     }
 
 }

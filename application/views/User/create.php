@@ -4,6 +4,7 @@ echo '<a href="#" id="part">Particulier</a>&nbsp<a href="#" id="pro">Professionn
 
 // bloc pour le formulaire d'inscription particulier
 echo '<div id="particulier">';
+echo validation_errors(); 
 echo form_open('user/inscription');
 
 echo form_input($form['particulier']['nom']);
@@ -26,6 +27,7 @@ echo "</div>";
 // bloc pour formulaire d'inscription d'un professionnel
 echo '<div id="professionnel">';
 echo form_open('user/inscription');
+echo validation_errors(); 
 
 echo form_input($form['professionnel']['nom']);
 echo form_input($form['professionnel']['prenom'])."<br>";
