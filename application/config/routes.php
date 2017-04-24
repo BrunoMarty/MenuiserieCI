@@ -54,6 +54,7 @@ $route['default_controller'] = 'Main';
 $route['user'] = "User";
 $route['user/inscription'] = "User/create";
 $route['user/disconnect'] = "User/disconnect";
+$route['user/account'] = "User/modif";
 
 $route['admin'] = 'Admin';
 $route['admin/horaire'] = 'Admin/getHoraire';

@@ -20,65 +20,88 @@ class User_Model extends CI_Model {
         }
         return 0;
     }
+
     // fonction d'ajout de compte Particulier ou Pro, en fonction du formulaire par lequel on arrive
     public function add_account() {
         // création de compte particulier
-         $ville = $this->verif_ville($this->input->post('cp'), $this->input->post('ville'));
         if ($this->input->post('type') == "particulier") {
             $this->load->helper('url');
-            if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
-                return false;
-            } else {
-                $data = array(
-                    'nom' => $this->input->post('nom'),
-                    'prenom' => $this->input->post('prenom'),
-                    'email' => $this->input->post('email'),
-                    'password' => md5($this->input->post('password')),
-                    'adresse' => $this->input->post('adresse'),
-                   'fk_ville' =>  $ville['id'],
-                    'assurance' => $this->input->post('assurance'),
-                    'tel' => $this->input->post('tel'),
-                    'date_naissance' => $this->input->post('naissance'),
-                    'fk_usager' => 1,
-                    'date_adhesion' => date('Y-m-d'),
-                    'fk_abonnement' => 1,
-                    'formation' => false,
-                );
-                // ajout en BDD
-                return $this->db->insert('Particulier', $data);
-            }
+            $data = $this->recup_form(1);
+            // ajout en BDD
+            return $this->db->insert('Particulier', $data);
         }
         // création de compte professionnel
-        elseif($this->input->post('type') == "professionnel"){
-             if(($this->input->post('nom') == "")||($this->input->post('prenom') == "")||($this->input->post('email') == "")) {
-                return false;
-            } else {
-               
-                $data = array(
-                    'nom' => $this->input->post('nom'),
-                    'prenom' => $this->input->post('prenom'),
-                    'email' => $this->input->post('email'),
-                    'password' => md5($this->input->post('password')),
-                    'adresse' => $this->input->post('adresse'),
-                    'fk_ville' =>  $ville['id'],
-                    'fk_profession' => 1,
-                    'raison_sociale' => $this->input->post('raison'),
-                    'tel' => $this->input->post('tel'),
-                    'date_creation' => $this->input->post('creation'),
-                    'fk_abonnement' => 1,
-                );
-                // ajout en BDD
-                return $this->db->insert('Professionnel', $data);
-            }
+        elseif ($this->input->post('type') == "professionnel") {
+            $data = $this->recup_form(2);
+            // ajout en BDD
+            return $this->db->insert('Professionnel', $data);
         }
     }
-    
-    public function verif_ville($cp,$ville) {
+    // fonction de mise à jour de compte
+    public function update_account() {
+        if ($this->input->post('type') == "particulier") {
+            $data = $this->recup_form(1);
+            return $this->db->update('Particulier', $data);
+        } elseif ($this->input->post('type') == "professionnel") {
+            $data = $this->recup_form(2);
+            return $this->db->update('Professionnel', $data);
+        }
+    }
+
+    //fonction qui check en BDD si le duo Code postal et nom de ville existe, si c'est le cas elle la retourne sinon elle l'a crée puis la retourne
+    public function verif_ville($cp, $ville) {
         $query = $this->db->get_where('Ville', array('code_postal' => $cp, 'ville' => strtoupper($ville)));
-        if($query->row_array()==NULL){
-            $this->db->insert('Ville', array('code_postal'=> $cp,'ville'=> strtoupper($ville)));
+        if ($query->row_array() == NULL) {
+            $this->db->insert('Ville', array('code_postal' => $cp, 'ville' => strtoupper($ville)));
             $query = $this->db->get_where('Ville', array('code_postal' => $cp, 'ville' => strtoupper($ville)));
         }
         return $query->row_array();
     }
+
+    // fonction qui retourne une ville en bdd en fonction de l'id
+    public function getVille($id) {
+        $query = $this->db->get_where('Ville', array('id' => $id));
+        return $query->row_array();
+    }
+
+    // récupère les données des champs du formulaire
+    private function recup_form($choix) {
+        $ville = $this->verif_ville(34500, $this->input->post('ville'));
+        $data = array(
+            'nom' => $this->input->post('nom'),
+            'prenom' => $this->input->post('prenom'),
+            'email' => $this->input->post('email'),
+            'adresse' => $this->input->post('adresse'),
+            'fk_ville' => $ville['id'],
+//            'tel' => $this->input->post('tel'),
+            'fk_abonnement' => 1,
+            'date_adhesion' => date('Y-m-d'),
+            'tel' => $this->input->post('tel'),
+        );
+        if ($this->input->post('password')) {
+            $data = array_merge($data, array('password' => md5($this->input->post('password'))));
+        }
+        $tab = $this->spe_form($choix);
+        $data = array_merge($tab, $data);
+        return $data;
+    }
+
+    // functon qui récupère les champs spécifiques à un compte pro ou part
+    private function spe_form($choix) {
+        if ($choix == 1) {
+            return array(
+                'assurance' => $this->input->post('assurance'),
+                'date_naissance' => $this->input->post('naissance'),
+                'fk_usager' => 1,
+                'formation' => false,
+            );
+        } elseif ($choix == 2) {
+            return array(
+                'fk_profession' => 1,
+                'raison_sociale' => $this->input->post('raison'),
+                'date_creation' => $this->input->post('creation'),
+            );
+        }
+    }
+
 }

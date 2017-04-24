@@ -41,7 +41,6 @@ class User extends CI_Controller {
 
     //fonction de création de compte
     public function create() {
-        $data['test']=$this->User_Model->verif_ville(34500, "beziers");
         $data['title'] = "Inscription";
         // on passe à la vue des variables contenants le nécessaires afin de créer les formulaires sur la vue
         $data['form']['particulier'] = $this->formAccount(1);
@@ -61,6 +60,25 @@ class User extends CI_Controller {
         $this->load->view('footer');
     }
 
+    // fonction pour modifier son profil
+    public function modif() {
+        $data['title'] = "Mon compte";
+        if (isset($_SESSION)) {
+            if (isset($_SESSION['user']['siret'])) {
+                $data['form'] = $this->formAccount(2, $_SESSION['user']);
+            } else {
+                $data['form'] = $this->formAccount(1, $_SESSION['user']);
+                $this->validationAccount(1);
+            }
+        }
+        if ($this->input->post()) {
+            $this->User_Model->update_account();
+        }
+        $this->load->view('header');
+        $this->load->view('User/modif', $data);
+        $this->load->view('footer');
+    }
+
     // fonction qui detruit la variale de connexion et qui renvoi que le page de connexion
     public function disconnect() {
         unset($_SESSION);
@@ -69,46 +87,66 @@ class User extends CI_Controller {
     }
 
     // fonction qui génère un formulaire piarticulier ou pro en fonction du paramètre envoyé
-    public function formAccount($choix) {
+    public function formAccount($choix, $valeur = NULL) {
+
+        if ($valeur != NULL) {
+            $ville = $this->User_Model->getVille($valeur['fk_ville']);
+        } else {
+            $ville['code_postal'] = "";
+            $ville['ville'] = "";
+        }
         $form['nom'] = array(
             'name' => 'nom',
             'class' => 'user',
             'placeholder' => 'Nom...',
+            'value' => $valeur['nom'],
         );
         $form['prenom'] = array(
             'name' => 'prenom',
             'class' => 'user',
             'placeholder' => 'Prenom ...',
+            'value' => $valeur['prenom'],
         );
         $form['email'] = array(
             'name' => 'email',
             'class' => 'user',
             'placeholder' => 'E-mail...',
+            'value' => $valeur['email'],
         );
         $form['password'] = array(
+            'type' => 'password',
             'name' => 'password',
             'class' => 'user',
             'placeholder' => 'Mot de passe...',
+        );
+        $form['old_password'] = array(
+            'name' => 'old_password',
+            'class' => 'user',
+            'placeholder' => 'Ancien mot de passe...',
         );
         $form['adresse'] = array(
             'name' => 'adresse',
             'class' => 'user',
             'placeholder' => 'Adresse ...',
+            'value' => $valeur['adresse'],
         );
         $form['ville'] = array(
             'name' => 'ville',
             'class' => 'user',
             'placeholder' => 'Ville...',
+            'value' => $ville['ville'],
         );
         $form['cp'] = array(
             'name' => 'cp',
             'class' => 'user',
             'placeholder' => 'Code Postal ...',
+            'value' => $ville['code_postal'],
         );
         $form['tel'] = array(
             'name' => 'tel',
             'class' => 'user',
             'placeholder' => 'N°Tel...',
+            'value' => $valeur['tel'],
         );
         $form['abonnement'] = array(
             'name' => 'abonnement',
@@ -121,11 +159,13 @@ class User extends CI_Controller {
                 'name' => 'assurance',
                 'class' => 'user',
                 'placeholder' => 'Assurance ...',
+                'value' => $valeur['assurance'],
             );
             $form['naissance'] = array(
                 'name' => 'naissance',
                 'class' => 'user',
                 'placeholder' => 'Date de naissance ...',
+                'value' => $valeur['date_naissance'],
             );
             $form['type'] = array(
                 'name' => 'type',
@@ -139,16 +179,19 @@ class User extends CI_Controller {
                 'name' => 'raison',
                 'class' => 'user',
                 'placeholder' => 'Raison sociale...',
+                'value' => $valeur['raison'],
             );
             $form['siret'] = array(
                 'name' => 'siret',
                 'class' => 'user',
                 'placeholder' => 'N°Siret ...',
+                'value' => $valeur['siret'],
             );
             $form['creation'] = array(
                 'name' => 'date_creation',
                 'class' => 'user',
                 'placeholder' => 'Date de création ...',
+                'value' => $valeur['date_creation'],
             );
             $form['type'] = array(
                 'name' => 'type',
@@ -160,6 +203,7 @@ class User extends CI_Controller {
         return $form;
     }
 
+    // fonction qui créer les controles de saisies, REGEX etc ...
     public function validationAccount($choix) {
 
         $this->form_validation->set_rules('nom', 'nom', 'trim|required|min_length[3]', array(
@@ -175,23 +219,22 @@ class User extends CI_Controller {
             'required' => 'Vous devez saisir un %s.',
             'min_length' => 'Le nom doit faire 3 caractères minimum'
         ));
-        
+
         $this->form_validation->set_rules('tel', 'tel', 'trim|required|exact_length[10]|integer', array(
             'required' => 'Vous devez saisir un %s.',
             'exact_length' => 'Le numéro de téléphone doit contenir 10 chiffres',
             'integer' => 'Le téléphone doit contenir que des chiffres'
-            
         ));
         $this->form_validation->set_rules('cp', 'cp', 'trim|required|exact_length[5]|integer', array(
             'required' => 'Vous devez saisir un code postal.',
             'exact_length' => 'Le code postal doit contenir 5 chiffres',
-            'integer' => 'Le code postal doit contenir que des chiffres'   
+            'integer' => 'Le code postal doit contenir que des chiffres'
         ));
         $this->form_validation->set_rules('adresse', 'adresse', 'trim|required|min_length[5]', array(
             'required' => 'Vous devez saisir un %s.',
             'min_length' => 'L\'adresse doit faire 5 caractères minimum'
         ));
-        
+
         $this->form_validation->set_rules('password', 'password', 'trim|required|min_length[5]|alpha_dash', array(
             'required' => 'Vous devez saisir un %s.',
             'min_length' => 'Le mot de passe doit faire 5 caractères minimum',
