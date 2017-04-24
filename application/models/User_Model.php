@@ -37,12 +37,15 @@ class User_Model extends CI_Model {
             return $this->db->insert('Professionnel', $data);
         }
     }
+
     // fonction de mise à jour de compte
     public function update_account() {
         if ($this->input->post('type') == "particulier") {
+            // appel de la fonction recup_form pour un particulier
             $data = $this->recup_form(1);
             return $this->db->update('Particulier', $data);
         } elseif ($this->input->post('type') == "professionnel") {
+            // appel de la fonction recup_form pour un professionnel
             $data = $this->recup_form(2);
             return $this->db->update('Professionnel', $data);
         }
@@ -63,17 +66,42 @@ class User_Model extends CI_Model {
         $query = $this->db->get_where('Ville', array('id' => $id));
         return $query->row_array();
     }
+    
+    // fonction qui permet de reset le mot de passe avec une nombre random
+    // PS : il manque encore à faire l'envoi de mail 
+    public function resetPassword($mail, $rand) {
+        $compte = $this->getCompte($mail);
+        $compte['password'] = md5($rand);
+        // envoi de mail à faire 
+        if (!isset($compte['siret'])) {
+            return $this->db->update('Particulier', $compte);        
+        } else {
+            return $this->db->update('Professionnel', $compte);
+        }
+    }
+    
+    // fonction qui récupère un compte en base de données en fonction de l'adresse mail
+    private function getCompte($email) {
+        $query = $this->db->get_where('Particulier', array('email' => $email));
+        if ($query->row_array() == NULL) {
+            $query = $this->db->get_where('Professionnel', array('email' => $email));
+        }
+        if ($query->row_array() == NULL) {
+            return false;
+        }
+        return $query->row_array();
+    }
 
-    // récupère les données des champs du formulaire
+    // récupère les données des champs du formulaire, les champs commun, puis les spécifiques 
+    // grace à l'appel de la fonction spe_form()
     private function recup_form($choix) {
-        $ville = $this->verif_ville(34500, $this->input->post('ville'));
+        $ville = $this->verif_ville($this->input->post('cp'), $this->input->post('ville'));
         $data = array(
             'nom' => $this->input->post('nom'),
             'prenom' => $this->input->post('prenom'),
             'email' => $this->input->post('email'),
             'adresse' => $this->input->post('adresse'),
             'fk_ville' => $ville['id'],
-//            'tel' => $this->input->post('tel'),
             'fk_abonnement' => 1,
             'date_adhesion' => date('Y-m-d'),
             'tel' => $this->input->post('tel'),
@@ -88,20 +116,19 @@ class User_Model extends CI_Model {
 
     // functon qui récupère les champs spécifiques à un compte pro ou part
     private function spe_form($choix) {
-        if ($choix == 1) {
+        if ($choix == 1) 
             return array(
                 'assurance' => $this->input->post('assurance'),
                 'date_naissance' => $this->input->post('naissance'),
                 'fk_usager' => 1,
                 'formation' => false,
             );
-        } elseif ($choix == 2) {
+        elseif ($choix == 2) 
             return array(
                 'fk_profession' => 1,
                 'raison_sociale' => $this->input->post('raison'),
                 'date_creation' => $this->input->post('creation'),
             );
-        }
     }
 
 }

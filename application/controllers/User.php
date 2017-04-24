@@ -86,6 +86,21 @@ class User extends CI_Controller {
         redirect('user', 'refresh');
     }
 
+    public function getPassword() {
+        $data['title'] = "Récupérer son mot de passe";
+        $data['email'] = array(
+            'name' => 'email',
+            'class' => 'user',
+            'placeholder' => 'E-mail...',);
+        if($this->input->post()){
+            $rand= rand(0,100000);
+            $this->User_Model->resetPassword($this->input->post('email'),$rand);
+        }
+        $this->load->view('header');
+        $this->load->view('User/password', $data);
+        $this->load->view('footer');
+    }
+
     // fonction qui génère un formulaire piarticulier ou pro en fonction du paramètre envoyé
     public function formAccount($choix, $valeur = NULL) {
 
