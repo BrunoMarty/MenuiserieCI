@@ -66,7 +66,7 @@ class User_Model extends CI_Model {
         $query = $this->db->get_where('Ville', array('id' => $id));
         return $query->row_array();
     }
-    
+
     // fonction qui permet de reset le mot de passe avec une nombre random
     // PS : il manque encore à faire l'envoi de mail 
     public function resetPassword($mail, $rand) {
@@ -74,12 +74,12 @@ class User_Model extends CI_Model {
         $compte['password'] = md5($rand);
         // envoi de mail à faire 
         if (!isset($compte['siret'])) {
-            return $this->db->update('Particulier', $compte);        
+            return $this->db->update('Particulier', $compte);
         } else {
             return $this->db->update('Professionnel', $compte);
         }
     }
-    
+
     // fonction qui récupère un compte en base de données en fonction de l'adresse mail
     private function getCompte($email) {
         $query = $this->db->get_where('Particulier', array('email' => $email));
@@ -90,6 +90,14 @@ class User_Model extends CI_Model {
             return false;
         }
         return $query->row_array();
+    }
+
+    public function getComptes($choix) {
+        if ($choix == 1)
+            $query = $this->db->get('Particulier');
+        elseif ($choix == 2)
+           $query = $this->db->get('Professionnel');
+        return $query -> result_array();
     }
 
     // récupère les données des champs du formulaire, les champs commun, puis les spécifiques 
@@ -116,14 +124,14 @@ class User_Model extends CI_Model {
 
     // functon qui récupère les champs spécifiques à un compte pro ou part
     private function spe_form($choix) {
-        if ($choix == 1) 
+        if ($choix == 1)
             return array(
                 'assurance' => $this->input->post('assurance'),
                 'date_naissance' => $this->input->post('naissance'),
                 'fk_usager' => 1,
                 'formation' => false,
             );
-        elseif ($choix == 2) 
+        elseif ($choix == 2)
             return array(
                 'fk_profession' => 1,
                 'raison_sociale' => $this->input->post('raison'),

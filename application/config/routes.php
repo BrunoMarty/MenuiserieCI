@@ -49,14 +49,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+// Routes du controller Main (Agenda de Reservation)
 $route['default_controller'] = 'Main';
 
+// Routes du controller Affichage (Temps dans l'atelier)
+$route['affichage'] = 'Affichage';
+
+// Routes du controller User
 $route['user'] = "User";
 $route['user/inscription'] = "User/create";
 $route['user/disconnect'] = "User/disconnect";
 $route['user/account'] = "User/modif";
 $route['user/password'] = "User/getPassword";
 
+
+// Routes du controller Admin
 $route['admin'] = 'Admin';
 $route['admin/horaire'] = 'Admin/getHoraire';
 
