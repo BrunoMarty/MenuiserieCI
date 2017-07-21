@@ -1,5 +1,5 @@
 # La Menuiserie Collaborative
-=============
+
 [Url du site](http://menuiserieco.fr/beta/)
 
 ## Description:  
