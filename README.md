@@ -33,5 +33,7 @@ Il avait besoin d'ajouter une fonction de réservation à leur site déjà exist
 - Clément Cros
 - Marty Bruno
 
+Plus l'intervention de Sebastion Javary lors du Hackathon : Hack Me Up
+
 
 
